@@ -1,14 +1,47 @@
+import { ObjectId } from 'mongodb';
+
 import MeetupDetail from '../components/meetups/MeetupDetail';
 
-const MeetupDetails = () => {
-  return (
-    <MeetupDetail
-      image="https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/great-ocean-road-174028267-1494616481.jpg"
-      title="A First Meetup"
-      address="Some Street 5, Some City"
-      description="The meetup description"
-    />
-  );
+import getData from '../util/getData';
+
+const MeetupDetails = ({ meetupData }) => {
+  const { image, title, address, description } = meetupData;
+  return <MeetupDetail image={image} title={title} address={address} description={description} />;
 };
+
+export async function getStaticPaths() {
+  const [client, meetupsCollection] = await getData();
+
+  const meetups = await meetupsCollection.find({}, { _id: 1 }).toArray();
+
+  await client.close();
+
+  return {
+    fallback: false,
+    paths: meetups.map(meetup => ({ params: { meetupId: meetup._id.toString() } })),
+  };
+}
+
+export async function getStaticProps(context) {
+  const meetupId = context.params.meetupId;
+
+  const [client, meetupsCollection] = await getData();
+
+  const selectedMeetup = await meetupsCollection.findOne({ _id: ObjectId(meetupId) });
+
+  await client.close();
+
+  return {
+    props: {
+      meetupData: {
+        title: selectedMeetup.title,
+        image: selectedMeetup.image,
+        address: selectedMeetup.address,
+        description: selectedMeetup.description,
+        id: selectedMeetup._id.toString(),
+      },
+    },
+  };
+}
 
 export default MeetupDetails;

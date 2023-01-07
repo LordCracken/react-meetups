@@ -1,8 +1,18 @@
+import Head from 'next/head';
 import MeetupList from '../components/meetups/MeetupList';
+
 import getData from '../util/getData';
 
 const HomePage = ({ meetups }) => {
-  return <MeetupList meetups={meetups} />;
+  return (
+    <>
+      <Head>
+        <title>React Meetups</title>
+        <meta name="description" content="Browse a huge list of highly active React meetups!" />
+      </Head>
+      <MeetupList meetups={meetups} />
+    </>
+  );
 };
 
 export async function getStaticProps() {

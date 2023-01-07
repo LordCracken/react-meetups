@@ -1,12 +1,21 @@
 import { ObjectId } from 'mongodb';
 
+import Head from 'next/head';
 import MeetupDetail from '../components/meetups/MeetupDetail';
 
 import getData from '../util/getData';
 
 const MeetupDetails = ({ meetupData }) => {
   const { image, title, address, description } = meetupData;
-  return <MeetupDetail image={image} title={title} address={address} description={description} />;
+  return (
+    <>
+      <Head>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+      </Head>
+      <MeetupDetail image={image} title={title} address={address} description={description} />
+    </>
+  );
 };
 
 export async function getStaticPaths() {
